@@ -47,6 +47,10 @@ defmodule PasswordGenerator do
     |> Integer.to_string()
   end
 
+  defp get(:uppercase) do
+    <<Enum.random(?A..?Z)>>
+  end
+
   # Returns a list of atoms of included options
   defp include(options) do
     # Returns a list of key names when value is true
