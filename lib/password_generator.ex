@@ -70,7 +70,7 @@ defmodule PasswordGenerator do
       iex> PasswordGenerator.generate(options)
       "ab1d3"
   """
-  @spec generate(options :: map()) :: {:ok, bitstring() | {:error, bitstring()}}
+  @spec generate(options :: map()) :: {:ok, bitstring()} | {:error, bitstring()}
   def generate(options) do
     length = Map.has_key?(options, "length")
     validate_length(length, options)
