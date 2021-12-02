@@ -2,7 +2,6 @@ defmodule PasswordGenerator do
   @moduledoc """
   Generates random password depending on paramaters. Module main function is `generate(options)`.
   That functon takes the options map.
-
   Options example:
       options = %{
         "length" => "5",
@@ -10,7 +9,6 @@ defmodule PasswordGenerator do
         "uppercase" => "false",
         "symbols" => "false"
       }
-
   The options are only 4, `length`, `numbers`, `uppercase`, `symbols`.
   When the function is invoked the first thing is:
   Defines a length variable that checks the map passed keys for the length.
@@ -54,7 +52,6 @@ defmodule PasswordGenerator do
 
   @doc """
   Generates password for given options.
-
   ## Examples
       options = %{
         "length" => "5",
@@ -62,10 +59,8 @@ defmodule PasswordGenerator do
         "uppercase" => "false",
         "symbols" => "false"
       }
-
       iex> PasswordGenerator.generate(options)
       "abcdf"
-
       options = %{
         "length" => "5",
         "numbers" => "true",
@@ -74,7 +69,6 @@ defmodule PasswordGenerator do
       }
       iex> PasswordGenerator.generate(options)
       "ab1d3"
-
   """
   @spec generate(options :: map()) :: {:ok, bitstring() | {:error, bitstring()}}
   def generate(options) do
