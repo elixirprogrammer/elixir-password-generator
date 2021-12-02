@@ -103,7 +103,7 @@ defmodule PasswordGenerator do
     # If not all the values are booleans false is returned, true otherwise.
     value =
       options_values
-      |> Enum.all?(fn x -> String.to_existing_atom(x) |> is_boolean() end)
+      |> Enum.all?(fn x -> String.to_atom(x) |> is_boolean() end)
 
     validate_options_values_are_boolean(value, length, options_without_length)
   end
