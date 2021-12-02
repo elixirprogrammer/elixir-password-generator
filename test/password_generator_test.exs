@@ -64,7 +64,7 @@ defmodule PasswordGeneratorTest do
       options = %{
         "length" => "10",
         "numbers" => "invalid",
-        "uppercase" => "false",
+        "uppercase" => "0",
         "symbols" => "false"
       }
 
