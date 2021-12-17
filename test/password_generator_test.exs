@@ -13,9 +13,9 @@ defmodule PasswordGeneratorTest do
       {:ok, result} = PasswordGenerator.generate(options)
 
       options_type = %{
-        lowercase: Enum.map(?a..?z, fn n -> <<n>> end),
-        numbers: Enum.map(0..9, fn n -> Integer.to_string(n) end),
-        uppercase: Enum.map(?A..?Z, fn n -> <<n>> end),
+        lowercase: Enum.map(?a..?z, & <<&1>>),
+        numbers: Enum.map(0..9, & Integer.to_string(&1)),
+        uppercase: Enum.map(?A..?Z, & <<&1>>),
         symbols: String.split("!#$%&()*+,-./:;<=>?@[]^_{|}~", "", trim: true)
       }
 
