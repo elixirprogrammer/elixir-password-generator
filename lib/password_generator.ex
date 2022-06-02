@@ -72,25 +72,40 @@ defmodule PasswordGenerator do
   """
   @spec generate(options :: map()) :: {:ok, bitstring()} | {:error, bitstring()}
   def generate(options) do
-    length = Map.has_key?(options, "length")
-    validate_length(length, options)
+    validate_length(options)
+    |> validate_length_is_integer()
+    |> validate_options_values_are_boolean()
+    |> validate_options()
   end
 
-  defp validate_length(false, _options), do: {:error, "Please provide a length"}
+  defp validate_length(options) do
+    case Map.has_key?(options, "length") do
+      true ->
+        options
 
-  defp validate_length(true, options) do
-    numbers = Enum.map(0..9, & Integer.to_string(&1))
+      false ->
+        {:error, "Please provide a length"}
+    end
+  end
+
+  defp validate_length_is_integer({:error, error}), do: {:error, error}
+
+  defp validate_length_is_integer(options) do
+    numbers = Enum.map(0..9, &Integer.to_string(&1))
     length = options["length"]
-    length = String.contains?(length, numbers)
-    validate_length_is_integer(length, options)
+
+    case String.contains?(length, numbers) do
+      true ->
+        options
+
+      false ->
+        {:error, "Please provide a length"}
+    end
   end
 
-  defp validate_length_is_integer(false, _options) do
-    {:error, "Only integers allowed for length."}
-  end
+  def validate_options_values_are_boolean({:error, error}), do: {:error, error}
 
-  defp validate_length_is_integer(true, options) do
-    length = options["length"] |> String.trim() |> String.to_integer()
+  def validate_options_values_are_boolean(options) do
     options_without_length = Map.delete(options, "length")
     options_values = Map.values(options_without_length)
     # Iterate over the values and converts them to atoms and check if boolean
@@ -99,34 +114,39 @@ defmodule PasswordGenerator do
       options_values
       |> Enum.all?(fn x -> String.to_atom(x) |> is_boolean() end)
 
-    validate_options_values_are_boolean(value, length, options_without_length)
+    case value do
+      true ->
+        options
+
+      false ->
+        {:error, "Only booleans allowed for options values"}
+    end
   end
 
-  defp validate_options_values_are_boolean(false, _length, _options) do
-    {:error, "Only booleans allowed for options values"}
-  end
+  defp validate_options({:error, error}), do: {:error, error}
 
-  defp validate_options_values_are_boolean(true, length, options) do
-    options = [:lowercase_letter | included_options(options)]
+  defp validate_options(options) do
+    length = options["length"] |> String.trim() |> String.to_integer()
+    options_without_length = Map.delete(options, "length")
+    options = [:lowercase_letter | included_options(options_without_length)]
     included = include(options)
     length = length - length(included)
     random_strings = generate_strings(length, options)
     strings = included ++ random_strings
     invalid_option? = strings |> Enum.any?(&(&1 == false))
-    validate_options(invalid_option?, strings)
-  end
 
-  defp validate_options(true, _strings) do
-    {:error, "Only options allowed numbers, uppercase, symbols."}
-  end
+    case invalid_option? do
+      true ->
+        {:error, "Only options allowed numbers, uppercase, symbols."}
 
-  defp validate_options(false, strings) do
-    string =
-      strings
-      |> Enum.shuffle()
-      |> to_string()
+      false ->
+        string =
+          strings
+          |> Enum.shuffle()
+          |> to_string()
 
-    {:ok, string}
+        {:ok, string}
+    end
   end
 
   defp generate_strings(length, options) do
