@@ -70,7 +70,7 @@ defmodule PasswordGenerator do
       iex> PasswordGenerator.generate(options)
       "ab1d3"
   """
-  @spec generate(options :: map()) :: {:ok, bitstring()} | {:error, bitstring()}
+  @spec generate(options :: map()) :: {:ok, String.t()} | {:error, String.t()}
   def generate(options) do
     validate_length(options)
     |> validate_length_is_integer()
