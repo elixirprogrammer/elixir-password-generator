@@ -126,11 +126,11 @@ defmodule PasswordGenerator do
   defp validate_options({:error, error}), do: {:error, error}
 
   defp validate_options(options) do
-    length = options["length"] |> String.trim() |> String.to_integer()
+    length_to_integer = options["length"] |> String.trim() |> String.to_integer()
     options_without_length = Map.delete(options, "length")
     options = [:lowercase_letter | included_options(options_without_length)]
     included = include(options)
-    length = length - length(included)
+    length = length_to_integer - length(included)
     random_strings = generate_strings(length, options)
     strings = included ++ random_strings
     invalid_option? = strings |> Enum.any?(&(&1 == false))
