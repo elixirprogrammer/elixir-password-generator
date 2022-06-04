@@ -149,12 +149,14 @@ defmodule PasswordGenerator do
     end
   end
 
+  @spec generate_strings(length :: integer(), options :: list()) :: list()
   defp generate_strings(length, options) do
     Enum.map(1..length, fn _ ->
       Enum.random(options) |> get()
     end)
   end
 
+  @spec include(options :: list()) :: list()
   defp include(options) do
     options
     |> Enum.map(&get(&1))
@@ -164,6 +166,7 @@ defmodule PasswordGenerator do
   # example ?a = 97 and <<?a>> = "a"
   # Enum.random takes a range of integers
   # passing binary values you get all the letters of the alphabet
+  @spec get(atom()) :: String.t() | false
   defp get(:lowercase_letter) do
     <<Enum.random(?a..?z)>>
   end
@@ -188,6 +191,7 @@ defmodule PasswordGenerator do
   defp get(_option), do: false
 
   # Returns a list of atoms of included options
+  @spec included_options(options :: map()) :: list()
   defp included_options(options) do
     # Returns a list of key value pairs when value is true
     # example [{"numbers", true}, {"uppercase", true}]
