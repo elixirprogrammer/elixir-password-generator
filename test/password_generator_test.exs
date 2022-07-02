@@ -1,5 +1,6 @@
 defmodule PasswordGeneratorTest do
   use ExUnit.Case
+  use ExUnitProperties
 
   describe "Password Generator" do
     setup do
@@ -200,6 +201,21 @@ defmodule PasswordGeneratorTest do
       assert String.contains?(result, options.numbers)
 
       refute String.contains?(result, options.uppercase)
+    end
+  end
+
+  describe "Property based" do
+    property "invalid options" do
+      options_data = StreamData.fixed_map(%{
+        "length" => StreamData.integer(1..100),
+        "invalid" => StreamData.boolean
+      })
+
+      check all options <- options_data, max_runs: 5 do
+        options = Map.update!(options, "length", &("#{&1}")) |> IO.inspect
+        options = Map.replace!(options, "invalid", "true") |> IO.inspect
+        assert {:error, _error} = PasswordGenerator.generate(options) |> IO.inspect
+      end
     end
   end
 end
