@@ -60,7 +60,7 @@ defmodule PasswordGenerator do
         "symbols" => "false"
       }
       iex> PasswordGenerator.generate(options)
-      "abcdf"
+      {:ok, "abcdf"}
       options = %{
         "length" => "5",
         "numbers" => "true",
@@ -68,7 +68,7 @@ defmodule PasswordGenerator do
         "symbols" => "false"
       }
       iex> PasswordGenerator.generate(options)
-      "ab1d3"
+      {:ok, "ab1d3"}
   """
   @spec generate(options :: map()) :: {:ok, String.t()} | {:error, String.t()}
   def generate(options) do
@@ -128,7 +128,7 @@ defmodule PasswordGenerator do
   defp validate_options(options) do
     length_to_integer = options["length"] |> String.trim() |> String.to_integer()
     options_without_length = Map.delete(options, "length")
-    options = [:lowercase_letter | included_options(options_without_length)]
+    options = ["lowercase_letter" | included_options(options_without_length)]
     included = include(options)
     length = length_to_integer - length(included)
     random_strings = generate_strings(length, options)
@@ -167,20 +167,20 @@ defmodule PasswordGenerator do
   # Enum.random takes a range of integers
   # passing binary values you get all the letters of the alphabet
   @spec get(atom()) :: String.t() | false
-  defp get(:lowercase_letter) do
+  defp get("lowercase_letter") do
     <<Enum.random(?a..?z)>>
   end
 
-  defp get(:numbers) do
+  defp get("numbers") do
     Enum.random(0..9)
     |> Integer.to_string()
   end
 
-  defp get(:uppercase) do
+  defp get("uppercase") do
     <<Enum.random(?A..?Z)>>
   end
 
-  defp get(:symbols) do
+  defp get("symbols") do
     symbols =
       @symbols
       |> String.split("", trim: true)
@@ -197,9 +197,10 @@ defmodule PasswordGenerator do
     # example [{"numbers", true}, {"uppercase", true}]
     # then keys get mapped and converted to atoms
     # example [:numbers, :uppercase]
-    Enum.filter(options, fn {_key, value} ->
+    options
+    |> Enum.filter(fn {_key, value} ->
       value |> String.trim() |> String.to_existing_atom()
     end)
-    |> Enum.map(fn {key, _value} -> String.to_atom(key) end)
+    |> Enum.map(fn {key, _value} -> key end)
   end
 end
