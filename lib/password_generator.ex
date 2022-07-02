@@ -70,7 +70,7 @@ defmodule PasswordGenerator do
       iex> PasswordGenerator.generate(options)
       {:ok, "ab1d3"}
   """
-  @spec generate(options :: map()) :: {:ok, String.t()} | {:error, String.t()}
+  @spec generate(options :: map()) :: {:ok, binary()} | {:error, binary()}
   def generate(options) do
     validate_length(options)
     |> validate_length_is_integer()
@@ -78,6 +78,8 @@ defmodule PasswordGenerator do
     |> validate_options()
   end
 
+  # Checks if the length options is included, returns the options or {:error, error}
+  @spec validate_length(options :: map()) :: map() | {:error, binary()}
   defp validate_length(options) do
     case Map.has_key?(options, "length") do
       true ->
@@ -88,6 +90,9 @@ defmodule PasswordGenerator do
     end
   end
 
+  # Validates that the lenght value is a number, returns the options or {:error, error}
+  @spec validate_length_is_integer(options :: map() | {:error, binary()}) ::
+          {:error, binary()} | map()
   defp validate_length_is_integer({:error, error}), do: {:error, error}
 
   defp validate_length_is_integer(options) do
@@ -103,6 +108,10 @@ defmodule PasswordGenerator do
     end
   end
 
+  # Validates that the values of the options without the length
+  # are booleans, returns the options or {:error, error}
+  @spec validate_options_values_are_boolean(options :: map() | {:error, binary()}) ::
+          map() | {:error, binary()}
   def validate_options_values_are_boolean({:error, error}), do: {:error, error}
 
   def validate_options_values_are_boolean(options) do
@@ -123,6 +132,7 @@ defmodule PasswordGenerator do
     end
   end
 
+  # Validates that all options are valid, returns error when an invalid option is found.
   defp validate_options({:error, error}), do: {:error, error}
 
   defp validate_options(options) do
@@ -133,7 +143,7 @@ defmodule PasswordGenerator do
     length = length_to_integer - length(included)
     random_strings = generate_strings(length, options)
     strings = included ++ random_strings
-    invalid_option? = strings |> Enum.any?(&(&1 == false))
+    invalid_option? = false in strings
 
     case invalid_option? do
       true ->
@@ -166,7 +176,8 @@ defmodule PasswordGenerator do
   # example ?a = 97 and <<?a>> = "a"
   # Enum.random takes a range of integers
   # passing binary values you get all the letters of the alphabet
-  @spec get(atom()) :: String.t() | false
+  # Returns a letter string for the given option, false when not a valid option
+  @spec get(binary()) :: binary() | false
   defp get("lowercase_letter") do
     <<Enum.random(?a..?z)>>
   end
@@ -190,7 +201,7 @@ defmodule PasswordGenerator do
 
   defp get(_option), do: false
 
-  # Returns a list of atoms of included options
+  # Returns a list of strings of included options
   @spec included_options(options :: map()) :: list()
   defp included_options(options) do
     # Returns a list of key value pairs when value is true
